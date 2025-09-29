@@ -48,7 +48,7 @@ def get_instantiations(src_dir: str):
     ]
 
 # Supported NVIDIA GPU architectures.
-SUPPORTED_ARCHS = {"8.0", "8.6", "8.7", "8.9", "9.0"}
+SUPPORTED_ARCHS = {"8.0", "8.6", "8.7", "8.9", "9.0", "12.0"} # add "12.0"
 
 # Compiler flags.
 CXX_FLAGS = ["-g", "-O3", "-fopenmp", "-lgomp", "-std=c++17", "-DENABLE_BF16"]
@@ -147,7 +147,13 @@ if nvcc_cuda_version < Version("12.4"):
 
 # Add target compute capabilities to NVCC flags.
 for capability in compute_capabilities:
-    num = capability[0] + capability[2]
+    # num = capability[0] + capability[2] # ori
+    # replace
+    want_ptx = capability.endswith("+PTX")
+    base = capability.replace("+PTX", "")
+    #  try "12.0" -> "120"
+    num = base.replace(".", "") 
+
     if num == '90':
         num = '90a'
         HAS_SM90 = True
